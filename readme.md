@@ -1,5 +1,9 @@
 # Makerfabs ESP32 UWB DW3000
 
+**The DW3000 library in this repository was developed by NConcepts, not Makerfabs.  Makerfabs is simply responsible for maintaining the repository.**
+
+
+
 ```c++
 /*
 Version:		V1.0
@@ -51,7 +55,19 @@ Compares to the DWM1000, the DWM3000 has advantages as below:
 
 ## Software
 
-This is the code provided by the customer, which can realize the basic message sending and receiving. More software support, such as ranging, is not available at this time.
+This is the code provided by the customer, which can realize the basic message sending and receiving. 
+
+If you want to use ranging, you can try using the following code:
+
+```c
+Dw3000\examples\ex_06a_ss_twr_initiator\ex_06a_ss_twr_initiator.ino
+
+Dw3000\examples\ex_06b_ss_twr_responder\ex_06b_ss_twr_responder.ino
+```
+
+The EX_06A_SS_TWR_INITIATOR shows the distance after downloading the two UWB DW3000 separately.
 
  
+
+
 
