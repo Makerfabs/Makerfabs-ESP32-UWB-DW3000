@@ -1,11 +1,11 @@
 #include "dw3000.h"
 
-#define APP_NAME "SIMPLE TX v1.0"
+#define APP_NAME "SIMPLE TX v1.1"
 
 // connection pins
 const uint8_t PIN_RST = 27; // reset pin
 const uint8_t PIN_IRQ = 34; // irq pin
-const uint8_t PIN_SS = 4; // spi select pin
+const uint8_t PIN_SS = 4;   // spi select pin
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -20,8 +20,8 @@ static dwt_config_t config = {
     DWT_PHRRATE_STD, /* PHY header rate. */
     (129 + 8 - 8),   /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
     DWT_STS_MODE_OFF,
-    DWT_STS_LEN_64,  /* STS length, see allowed values in Enum dwt_sts_lengths_e */
-    DWT_PDOA_M0      /* PDOA mode off */
+    DWT_STS_LEN_64, /* STS length, see allowed values in Enum dwt_sts_lengths_e */
+    DWT_PDOA_M0     /* PDOA mode off */
 };
 
 /* The frame sent in this example is an 802.15.4e standard blink. It is a 12-byte frame composed of the following fields:
@@ -33,14 +33,15 @@ static uint8_t tx_msg[] = {0xC5, 0, 'D', 'E', 'C', 'A', 'W', 'A', 'V', 'E'};
 /* Index to access to sequence number of the blink frame in the tx_msg array. */
 #define BLINK_FRAME_SN_IDX 1
 
-#define FRAME_LENGTH    (sizeof(tx_msg)+FCS_LEN) //The real length that is going to be transmitted
+#define FRAME_LENGTH (sizeof(tx_msg) + FCS_LEN) // The real length that is going to be transmitted
 
 /* Inter-frame delay period, in milliseconds. */
 #define TX_DELAY_MS 500
 
 extern dwt_txconfig_t txconfig_options;
 
-void setup() {
+void setup()
+{
   UART_init();
   test_run_info((unsigned char *)APP_NAME);
 
@@ -49,63 +50,95 @@ void setup() {
   spiBegin(PIN_IRQ, PIN_RST);
   spiSelect(PIN_SS);
 
-  delay(2); // Time needed for DW3000 to start up (transition from INIT_RC to IDLE_RC, or could wait for SPIRDY event)
+  delay(200); // Time needed for DW3000 to start up (transition from INIT_RC to IDLE_RC, or could wait for SPIRDY event)
 
-  while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding 
+  while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding
   {
-    UART_puts("IDLE FAILED\r\n");
-    while (1) ;
+    test_run_info((unsigned char *)"IDLE FAILED01\r\n");
+    while (100)
+      ;
   }
 
+  dwt_softreset();
+  delay(200);
+
+  while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding
+  {
+    test_run_info((unsigned char *)"IDLE FAILED02\r\n");
+    while (100)
+      ;
+  }
+
+  // test_run_info((unsigned char *)"IDLE OK\r\n");
   if (dwt_initialise(DWT_DW_INIT) == DWT_ERROR)
   {
-    UART_puts("INIT FAILED\r\n");
-    while (1) ;
+    test_run_info((unsigned char *)"INIT FAILED\r\n");
+    while (100)
+      ;
   }
+  // test_run_info((unsigned char *)"INIT OK\r\n");
 
   // Enabling LEDs here for debug so that for each TX the D1 LED will flash on DW3000 red eval-shield boards.
   dwt_setleds(DWT_LEDS_ENABLE | DWT_LEDS_INIT_BLINK);
 
   // Configure DW IC. See NOTE 5 below.
-  if(dwt_configure(&config)) // if the dwt_configure returns DWT_ERROR either the PLL or RX calibration has failed the host should reset the device
+  if (dwt_configure(&config)) // if the dwt_configure returns DWT_ERROR either the PLL or RX calibration has failed the host should reset the device
   {
-    UART_puts("CONFIG FAILED\r\n");
-    while (1) ;
+    test_run_info((unsigned char *)"CONFIG FAILED\r\n");
+    while (100)
+      ;
   }
-
+  // test_run_info((unsigned char *)"CONFIG OK\r\n");
   /* Configure the TX spectrum parameters (power PG delay and PG Count) */
   dwt_configuretxrf(&txconfig_options);
 }
 
-void loop() {
-        /* Write frame data to DW IC and prepare transmission. See NOTE 3 below.*/
-        dwt_writetxdata(FRAME_LENGTH-FCS_LEN, tx_msg, 0); /* Zero offset in TX buffer. */
+void loop()
+{
+  /* Write frame data to DW IC and prepare transmission. See NOTE 3 below.*/
+  dwt_writetxdata(FRAME_LENGTH - FCS_LEN, tx_msg, 0); /* Zero offset in TX buffer. */
 
-        /* In this example since the length of the transmitted frame does not change,
-         * nor the other parameters of the dwt_writetxfctrl function, the
-         * dwt_writetxfctrl call could be outside the main while(1) loop.
-         */
-        dwt_writetxfctrl(FRAME_LENGTH, 0, 0); /* Zero offset in TX buffer, no ranging. */
+  /* In this example since the length of the transmitted frame does not change,
+   * nor the other parameters of the dwt_writetxfctrl function, the
+   * dwt_writetxfctrl call could be outside the main while(1) loop.
+   */
+  dwt_writetxfctrl(FRAME_LENGTH, 0, 0); /* Zero offset in TX buffer, no ranging. */
 
-        /* Start transmission. */
-        dwt_starttx(DWT_START_TX_IMMEDIATE);
-        /* Poll DW IC until TX frame sent event set. See NOTE 4 below.
-         * STATUS register is 4 bytes long but, as the event we are looking at is in the first byte of the register, we can use this simplest API
+  /* Start transmission. */
+  dwt_starttx(DWT_START_TX_IMMEDIATE);
+  delay(10); // Sleep(TX_DELAY_MS);
 
-         * function to access it.*/
-        while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS_BIT_MASK))
-        { };
+  /* Poll DW IC until TX frame sent event set. See NOTE 4 below.
+   * STATUS register is 4 bytes long but, as the event we are looking at is in the first byte of the register, we can use this simplest API
+   * function to access it.*/
 
-        /* Clear TX frame sent event. */
-        dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
+  while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS_BIT_MASK))
+  {
+    test_run_info((unsigned char *)"WHAT!!!\r\n");
+    /* Reads and validate device ID returns DWT_ERROR if it does not match expected else DWT_SUCCESS */
+    // if (dwt_check_dev_id() == DWT_SUCCESS)
+    {
+        //    UART_puts((char *)"DEV ID OK");
+    }
+    // else
+    {
+      //    UART_puts((char *)"DEV ID FAILED");
+    }
+    // delay(500);
+    // dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
+    // delay(1000);
+  };
 
-        test_run_info((unsigned char *)"TX Frame Sent");
+  /* Clear TX frame sent event. */
+  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
 
-        /* Execute a delay between transmissions. */
-        Sleep(TX_DELAY_MS);
+  test_run_info((unsigned char *)"TX Frame Sent");
 
-        /* Increment the blink frame sequence number (modulo 256). */
-        tx_msg[BLINK_FRAME_SN_IDX]++;
+  /* Execute a delay between transmissions. */
+  Sleep(TX_DELAY_MS);
+
+  /* Increment the blink frame sequence number (modulo 256). */
+  tx_msg[BLINK_FRAME_SN_IDX]++;
 }
 
 /*****************************************************************************************************************************************************

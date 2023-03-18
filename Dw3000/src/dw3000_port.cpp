@@ -14,9 +14,9 @@ uint8_t _irq;
 
 #ifdef ESP8266
   // default ESP8266 frequency is 80 Mhz, thus divide by 4 is 20 MHz
-  const SPISettings _fastSPI = SPISettings(20000000L, MSBFIRST, SPI_MODE0);
+  const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
 #else
-  const SPISettings _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
+  const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
 #endif
 const SPISettings _slowSPI = SPISettings(2000000L, MSBFIRST, SPI_MODE0);
 const SPISettings* _currentSPI = &_fastSPI;
