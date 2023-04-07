@@ -61,4 +61,19 @@ Dw3000\examples\ex_06a_ss_twr_initiator\ex_06a_ss_twr_initiator.ino
 Dw3000\examples\ex_06b_ss_twr_responder\ex_06b_ss_twr_responder.ino
 ```
 
+And change SPI frequency in "....\Arduino\libraries\Dw3000\src\dw3000_port.cpp"
+
+```c
+
+#ifdef ESP8266
+  // default ESP8266 frequency is 80 Mhz, thus divide by 4 is 20 MHz
+  const SPISettings _fastSPI = SPISettings(20000000L, MSBFIRST, SPI_MODE0);
+  //const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
+#else
+  const SPISettings _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
+  //const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
+#endif
+
+```
+
 The EX_06A_SS_TWR_INITIATOR shows the distance after downloading the two UWB DW3000 separately.
