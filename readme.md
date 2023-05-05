@@ -4,10 +4,13 @@
 
 ```c++
 /*
-Version:        V1.0
+Version:        V1.2
 Author:            Vincent
 Create Date:    2022/8/1
 Note:
+    2023/5/5     V1.2:The routines that can be used are placed in 
+                    the example folder separately, with instructions 
+                    added.
     2023/3/18    V1.1:Modify the SPI operating frequency in the library.
                       Added software reset to demo.
 */
@@ -49,31 +52,40 @@ Compares to the DWM1000, the DWM3000 has advantages as below:
 - Integrated ESP32 2.4G WiFi and Bluetooth.
 - DW3000 UWB module.
 
-## Software
+# Usage
 
-This is the code provided by the customer, which can realize the basic message sending and receiving. 
+## Install Library
 
-If you want to use ranging, you can try using the following code:
+**The library is provided by the customer. It was not developed by Makerfabs.**
+
+Copy "Dw3000" to Arduino library directory.
+
+## Example
+
+**The codes are provided by the customer, which can realize the basic usage.**
+
+## simple_test
+
+The appearance of the test program, simple send and receive data. TX sends, RX receives the message.
+
+## range
+
+**You need to change the frequency of SPI initialization in the library**
+
+Simple test program, respectively download range_tx and range_rx. range_rx's serial port outputs distance.
+
+
+
+Change SPI frequency in "....\Arduino\libraries\Dw3000\src\dw3000_port.cpp"
+
+line 19:
+
+Change 8000000L to 16000000L
 
 ```c
-Dw3000\examples\ex_06a_ss_twr_initiator\ex_06a_ss_twr_initiator.ino
-
-Dw3000\examples\ex_06b_ss_twr_responder\ex_06b_ss_twr_responder.ino
-```
-
-And change SPI frequency in "....\Arduino\libraries\Dw3000\src\dw3000_port.cpp"
-
-```c
-
-#ifdef ESP8266
-  // default ESP8266 frequency is 80 Mhz, thus divide by 4 is 20 MHz
-  const SPISettings _fastSPI = SPISettings(20000000L, MSBFIRST, SPI_MODE0);
-  //const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
 #else
-  const SPISettings _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
   //const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
+  const SPISettings _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
+  
 #endif
-
 ```
-
-The EX_06A_SS_TWR_INITIATOR shows the distance after downloading the two UWB DW3000 separately.
