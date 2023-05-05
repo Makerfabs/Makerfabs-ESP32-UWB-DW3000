@@ -70,22 +70,4 @@ The appearance of the test program, simple send and receive data. TX sends, RX r
 
 ## range
 
-**You need to change the frequency of SPI initialization in the library**
-
 Simple test program, respectively download range_tx and range_rx. range_rx's serial port outputs distance.
-
-
-
-Change SPI frequency in "....\Arduino\libraries\Dw3000\src\dw3000_port.cpp"
-
-line 19:
-
-Change 8000000L to 16000000L
-
-```c
-#else
-  //const SPISettings _fastSPI = SPISettings(8000000L, MSBFIRST, SPI_MODE0);
-  const SPISettings _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
-  
-#endif
-```

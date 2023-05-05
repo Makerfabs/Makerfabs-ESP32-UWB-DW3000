@@ -1,4 +1,7 @@
 #include "dw3000.h"
+#include "SPI.h"
+
+extern SPISettings _fastSPI;
 
 #define PIN_RST 27
 #define PIN_IRQ 34
@@ -43,6 +46,8 @@ extern dwt_txconfig_t txconfig_options;
 void setup()
 {
   UART_init();
+
+  _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
 
   spiBegin(PIN_IRQ, PIN_RST);
   spiSelect(PIN_SS);
