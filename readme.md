@@ -24,7 +24,7 @@ Note:
 
 [Makerfabs home page](https://www.makerfabs.com/)
 
-[Makerfabs Wiki](https://makerfabs.com/wiki/index.php?title=Main_Page)
+[Makerfabs Wiki](https://wiki.makerfabs.com/)
 
 # Makerfabs ESP32 UWB DW3000
 
@@ -32,7 +32,7 @@ Note:
 
 Product Link ：[esp32-uwb-dw3000](https://www.makerfabs.com/esp32-uwb-dw3000.html) 
 
-Wiki Link : 
+Wiki Link : [ESP32 UWB DW3000](https://wiki.makerfabs.com/ESP32_DW3000_UWB.html)
 
 Makerfabs ESP32 UWB contains an ESP32 and a DW3000 chip.
 
