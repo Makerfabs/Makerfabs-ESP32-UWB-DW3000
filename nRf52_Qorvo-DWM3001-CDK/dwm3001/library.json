@@ -1,0 +1,9 @@
+{
+  "name": "DW3000_DWM3001",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "keywords": "uwb, dw3000, dwm3001, nrf52",
+  "description": "Decawave/Qorvo DW3xxx driver re-targeted to Nordic nRF52 + DWM3001 hardware with the Makerfabs examples.",
+  "frameworks": "arduino",
+  "platforms": "nrf52"
+}
