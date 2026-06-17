@@ -14,7 +14,7 @@ extern SPISettings _fastSPI;
 #define RESP_MSG_POLL_RX_TS_IDX 10
 #define RESP_MSG_RESP_TX_TS_IDX 14
 #define RESP_MSG_TS_LEN 4
-#define POLL_RX_TO_RESP_TX_DLY_UUS 450
+#define POLL_RX_TO_RESP_TX_DLY_UUS 900
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {

@@ -12,7 +12,7 @@
 #define RESP_MSG_POLL_RX_TS_IDX 10
 #define RESP_MSG_RESP_TX_TS_IDX 14
 #define RESP_MSG_TS_LEN 4
-#define POLL_TX_TO_RESP_RX_DLY_UUS 240
+#define POLL_TX_TO_RESP_RX_DLY_UUS 600
 #define RESP_RX_TIMEOUT_UUS 400
 
 /* Default communication configuration. We use default non-STS DW mode. */
