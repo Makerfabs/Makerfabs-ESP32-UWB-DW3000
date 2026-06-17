@@ -91,6 +91,16 @@ void setup()
    * Note, in real low power applications the LEDs should not be used. */
   dwt_setlnapamode(DWT_LNA_ENABLE | DWT_PA_ENABLE);
 
+  /* Warm up PLL: send a dummy TX to force PLL lock before the first real ranging cycle */
+  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
+  dwt_writetxdata(0, NULL, 0);
+  dwt_writetxfctrl(0, 0, 0);
+  dwt_starttx(DWT_START_TX_IMMEDIATE);
+  while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS_BIT_MASK))
+  {
+  };
+  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
+
   Serial.println("Range RX");
   Serial.println("Setup over........");
 }
