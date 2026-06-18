@@ -47,13 +47,16 @@ void setup()
 {
   UART_init();
 
-  _fastSPI = SPISettings(16000000L, MSBFIRST, SPI_MODE0);
+  _fastSPI = SPISettings(7000000L, MSBFIRST, SPI_MODE0);
 
   spiBegin(PIN_IRQ, PIN_RST);
   spiSelect(PIN_SS);
 
   delay(2); // Time needed for DW3000 to start up (transition from INIT_RC to IDLE_RC, or could wait for SPIRDY event)
 
+  dwt_softreset();
+  delay(2);
+  
   while (!dwt_checkidlerc()) // Need to make sure DW IC is in IDLE_RC before proceeding
   {
     UART_puts("IDLE FAILED\r\n");
@@ -89,16 +92,6 @@ void setup()
   /* Next can enable TX/RX states output on GPIOs 5 and 6 to help debug, and also TX/RX LEDs
    * Note, in real low power applications the LEDs should not be used. */
   dwt_setlnapamode(DWT_LNA_ENABLE | DWT_PA_ENABLE);
-
-  /* Warm up PLL: send a dummy TX to force PLL lock before the first real ranging cycle */
-  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
-  dwt_writetxdata(0, NULL, 0);
-  dwt_writetxfctrl(0, 0, 0);
-  dwt_starttx(DWT_START_TX_IMMEDIATE);
-  while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS_BIT_MASK))
-  {
-  };
-  dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
 
   Serial.println("Range TX");
   Serial.println("Setup over........");
