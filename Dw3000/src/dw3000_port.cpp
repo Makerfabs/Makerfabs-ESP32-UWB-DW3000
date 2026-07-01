@@ -11,6 +11,7 @@
 uint8_t _ss;
 uint8_t _rst;
 uint8_t _irq;
+static bool _irq_enabled = true;
 
 #ifdef ESP8266
   // default ESP8266 frequency is 80 Mhz, thus divide by 4 is 20 MHz
@@ -57,12 +58,12 @@ void enableDebounceClock() {
 
 void sleepms(uint32_t x)
 {
-  //_delay_ms(x); // delay by milliseconds
+  delay(x);
 }
 
 int sleepus(uint32_t x)
 {
-  //_delay_us(x); // delay by microseconds
+  delayMicroseconds(x);
   return 0;
 }
 
@@ -89,6 +90,9 @@ void spiBegin(uint8_t irq, uint8_t rst)
   // Configure the IRQ pin as INPUT. Required for correct interrupt setting for ESP8266
       pinMode(irq, INPUT);
   // start SPI
+#if defined(ARDUINO_ARCH_NRF52)
+  SPI.setPins(DW3000_PIN_MISO, DW3000_PIN_SCK, DW3000_PIN_MOSI);
+#endif
   SPI.begin();
 #ifndef ESP8266
 //  SPI.usingInterrupt(digitalPinToInterrupt(irq)); // not every board support this, e.g. ESP8266
@@ -529,19 +533,19 @@ void port_set_dw_ic_spi_fastrate(uint8_t irq, uint8_t rst, uint8_t ss) {
 }
 
 uint32_t port_GetEXT_IRQStatus(void) {
-
+    return _irq_enabled ? 1UL : 0UL;
 }
 
 uint32_t port_CheckEXT_IRQ(void) {
-
+    return digitalRead(_irq) ? 1UL : 0UL;
 }
 
 void port_DisableEXT_IRQ(void) {
-
+    _irq_enabled = false;
 }
 
 void port_EnableEXT_IRQ(void) {
-
+    _irq_enabled = true;
 }
 
 /* DW IC IRQ handler definition. */

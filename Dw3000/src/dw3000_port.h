@@ -8,6 +8,7 @@
 #ifndef PORT_H_
 #define PORT_H_
 
+#include "dw3000_board_config.h"
 #include "dw3000.h"
 
 #define DDR_SPI DDRB
@@ -16,12 +17,12 @@
 #define DD_MOSI DDB3
 #define DD_SS 4
 
-#define DEFAULT_IRQ 34
-#define DEFAULT_RST 27
-#define DEFAULT_SS 4
+#define DEFAULT_IRQ DW3000_PIN_IRQ
+#define DEFAULT_RST DW3000_PIN_RST
+#define DEFAULT_SS DW3000_PIN_CS
 
 //#define DDR_PORTD DDRD
-#define DD_RESET_PIN 27
+#define DD_RESET_PIN DW3000_PIN_RST
 
 #ifndef FALSE
 #define FALSE  0

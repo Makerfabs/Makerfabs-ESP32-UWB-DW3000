@@ -4,9 +4,9 @@
 #define APP_NAME "SS TWR AES RESP v1.0"
 
 // connection pins
-const uint8_t PIN_RST = 27; // reset pin
-const uint8_t PIN_IRQ = 34; // irq pin
-const uint8_t PIN_SS = 4; // spi select pin
+const uint8_t PIN_RST = DW3000_PIN_RST; // reset pin
+const uint8_t PIN_IRQ = DW3000_PIN_IRQ; // irq pin
+const uint8_t PIN_SS = DW3000_PIN_CS; // spi select pin
 
 /* This SS-TWR example will use sample MAC data frame format as defined by mac_frame_802_15_4_format_t structure */
 mac_frame_802_15_4_format_t     mac_frame;

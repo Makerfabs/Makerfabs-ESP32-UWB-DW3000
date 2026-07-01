@@ -1,4 +1,4 @@
-/*! ----------------------------------------------------------------------------
+﻿/*! ----------------------------------------------------------------------------
  * @file    deca_mutex.c
  * @brief   IRQ interface / mutex implementation
  *
@@ -48,18 +48,27 @@
  *
  * returns the state of the DW1000 interrupt
  */
+#if defined(ARDUINO_ARCH_ESP32)
 portMUX_TYPE my_mutex = portMUX_INITIALIZER_UNLOCKED;
+#endif
+
 decaIrqStatus_t decamutexon(void)
 {
-    portENTER_CRITICAL(&my_mutex);
-    /*portDISABLE_INTERRUPTS();
     decaIrqStatus_t s = port_GetEXT_IRQStatus();
 
-    if(s) {
-        port_DisableEXT_IRQ(); //disable the external interrupt line
+#if defined(ARDUINO_ARCH_ESP32)
+    portENTER_CRITICAL(&my_mutex);
+#elif defined(ARDUINO_ARCH_NRF52)
+    portENTER_CRITICAL();
+#else
+    portDISABLE_INTERRUPTS();
+#endif
+
+    if (s) {
+        port_DisableEXT_IRQ();
     }
-    return s ;   // return state before disable, value is used to re-enable in decamutexoff call
-    */
+
+    return s;
 }
 
 /*! ------------------------------------------------------------------------------------------------------------------
@@ -79,10 +88,15 @@ decaIrqStatus_t decamutexon(void)
  */
 void decamutexoff(decaIrqStatus_t s)        // put a function here that re-enables the interrupt at the end of the critical section
 {
-    portEXIT_CRITICAL(&my_mutex);
-    /*portENABLE_INTERRUPTS();
-
-    if(s) { //need to check the port state as we can't use level sensitive interrupt on the STM ARM
+    if (s) {
         port_EnableEXT_IRQ();
-    }*/
+    }
+
+#if defined(ARDUINO_ARCH_ESP32)
+    portEXIT_CRITICAL(&my_mutex);
+#elif defined(ARDUINO_ARCH_NRF52)
+    portEXIT_CRITICAL();
+#else
+    portENABLE_INTERRUPTS();
+#endif
 }
