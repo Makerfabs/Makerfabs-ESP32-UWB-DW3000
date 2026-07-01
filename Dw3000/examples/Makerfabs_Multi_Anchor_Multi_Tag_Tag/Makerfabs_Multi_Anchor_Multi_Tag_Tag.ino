@@ -1,4 +1,7 @@
 /*
+  Makerfabs DW3000 multi-anchor/multi-tag tag example.
+  Compatible with ESP32 + DW3000 and nRF52840 + DW3000 through dw3000_board_config.h.
+
 For nRF52840+DW3000:
 Additional boards manager URLs:https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
 Board: nrf52 V1.6.1
@@ -157,7 +160,7 @@ void setup()
     }
 }
 
-// 接收 A0 Beacon 并同步本地 TDMA epoch
+// Receive A0 Beacon and synchronize the local TDMA epoch.
 static void listen_for_beacon(uint16_t timeout_ms)
 {
     dwt_setrxtimeout(timeout_ms * 1000UL);
@@ -205,7 +208,7 @@ static void listen_for_beacon(uint16_t timeout_ms)
     }
 }
 
-// 未同步时只监听 Beacon，同步后按 Beacon epoch 划分 TDMA 时隙
+// Before synchronization, only listen for Beacon; after synchronization, use the Beacon epoch to divide TDMA slots.
 void loop()
 {
     if (!is_time_synced)
@@ -242,7 +245,7 @@ void loop()
     delay(1);
 }
 
-// 执行单次测距流程，包含发送 Poll 帧、依次接收各个 Anchor 的 Response 帧，并发送 Report 帧
+// Run one ranging cycle: send Poll, receive Anchor Responses, then send Report.
 void perform_ranging()
 {
     for (int i = 0; i < MAX_ANCHORS; i++)
@@ -307,7 +310,7 @@ void perform_ranging()
     send_report();
 }
 
-// 处理收到的 Anchor Response 帧
+// Handle a received Anchor Response frame.
 static void handle_response_frame(uint32_t poll_tx_ts_32)
 {
     uint32_t resp_rx_ts_32 = dwt_readrxtimestamplo32();
@@ -415,7 +418,7 @@ static void print_ranging_result()
     Serial.println(")");
 }
 
-// 广播 8 个距离值
+// Broadcast 8 distance values.
 static void send_report()
 {
     tx_report_msg[REPORT_MASK_IDX] = response_mask;

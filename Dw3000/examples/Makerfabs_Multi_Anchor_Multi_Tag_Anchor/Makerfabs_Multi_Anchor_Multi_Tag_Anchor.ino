@@ -1,4 +1,7 @@
 /*
+  Makerfabs DW3000 multi-anchor/multi-tag anchor example.
+  Compatible with ESP32 + DW3000 and nRF52840 + DW3000 through dw3000_board_config.h.
+
 For nRF52840+DW3000:
 Additional boards manager URLs:https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
 Board: nrf52 V1.6.1
@@ -195,7 +198,7 @@ void loop()
     }
 }
 
-// A0 广播 Beacon，为所有 Tag 提供 TDMA epoch
+// A0 broadcasts Beacon frames to provide the TDMA epoch for all tags.
 static void send_beacon()
 {
     tx_beacon_msg[BEACON_SEQ_IDX] = beacon_sequence++;
@@ -229,7 +232,7 @@ static void send_beacon()
     last_beacon_tx_ms = millis();
 }
 
-// 处理 Tag Poll 并按 Anchor ID 延迟回复 Response
+// Handle Tag Poll and reply with Response after the delay derived from Anchor ID.
 static void handle_poll()
 {
     poll_rx_ts = last_rx_ts;
@@ -268,7 +271,7 @@ static void handle_poll()
     }
 }
 
-// 处理 Tag Report 并输出统一结果
+// Handle Tag Report and print the unified ranging result.
 static void handle_report(uint16_t data_len)
 {
     if (data_len < REPORT_RANGE_IDX + MAX_ANCHORS * 2)

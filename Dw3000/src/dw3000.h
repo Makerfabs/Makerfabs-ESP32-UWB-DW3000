@@ -17,7 +17,9 @@
 #include "dw3000_device_api.h"
 #include "dw3000_shared_functions.h"
 
+#ifndef _BV
 #define _BV(n) (1 << n) // sets 1 at position of BIT "n"
+#endif
 #define __INLINE inline
 
 #endif /* MAIN_H_ */
